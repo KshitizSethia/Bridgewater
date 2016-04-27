@@ -1,3 +1,10 @@
+#eclipse
+.metadata
+.recommenders
+bin
+jars
+
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

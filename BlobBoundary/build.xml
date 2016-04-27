@@ -1,0 +1,40 @@
+<project default="package">
+	<path id="path">
+		<fileset dir="../libs">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="bin" />
+	</path>
+	<presetdef name="javac">
+		<javac includeantruntime="false" />
+	</presetdef>
+	<target name="clean">
+		<delete dir="bin" />
+		<delete dir="jars" />
+	</target>
+	<target name="package" depends="clean, compile">
+		<jar destfile="jars/BlobBoundary.jar" basedir="bin">
+			<manifest>
+				<attribute name="Main-Class" value="blobs.BlobBoundaryRunner" />
+			</manifest>
+		</jar>
+	</target>
+	<target name="test" depends="testCompile">
+		<junit printsummary="yes" haltonfailure="no">
+			<classpath refid="path" />
+			<formatter type="plain" usefile="false" />
+			<batchtest>
+				<fileset dir="bin">
+					<include name="**/*Test*" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+	<target name="compile" depends="clean">
+		<mkdir dir="bin" />
+		<javac srcdir="src" destdir="bin" debug="off" />
+	</target>
+	<target name="testCompile" depends="compile">
+		<javac srcdir="testsrc" destdir="bin" debug="on" classpathref="path" />
+	</target>
+</project>

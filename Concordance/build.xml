@@ -1,0 +1,56 @@
+<project default="package" xmlns:if="ant:if" xmlns:unless="ant:unless">
+	<!--Setting properties and paths-->
+	<path id="path">
+		<fileset dir="../libs">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="bin" />
+		<fileset dir="libs">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<presetdef name="javac">
+		<javac includeantruntime="false" classpathref="path" destdir="bin" debug="on" />
+	</presetdef>
+	<available property="libs_exist" file="libs" type="dir" />
+
+	<!--Targets-->
+	<target name="init" unless="libs_exist">
+		<mkdir dir="libs" />
+		<get src="http://download.icu-project.org/files/icu4j/57.1/icu4j-57_1.jar" dest="libs" />
+		<get src="http://apache.claz.org//commons/lang/binaries/commons-lang3-3.4-bin.zip" dest="libs/commons.zip" />
+		<unzip src="libs/commons.zip" dest="libs" />
+		<delete file="libs/commons.zip" />
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+		<delete dir="jars" />
+		<delete dir="libs" />
+	</target>
+	<target name="package" depends="compile">
+		<jar destfile="jars/Concordance.jar" basedir="bin">
+			<manifest>
+				<attribute name="Main-Class" value="concordance.WordIndexerRunner" />
+			</manifest>
+			<zipgroupfileset dir="libs" includes="**/*.jar" />
+		</jar>
+	</target>
+	<target name="test" depends="testCompile">
+		<junit printsummary="yes" haltonfailure="no">
+			<classpath refid="path" />
+			<formatter type="plain" usefile="false" />
+			<batchtest>
+				<fileset dir="bin">
+					<include name="**/*Test*" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+	<target name="compile" depends="init">
+		<mkdir dir="bin" />
+		<javac srcdir="src" />
+	</target>
+	<target name="testCompile" depends="compile, init">
+		<javac srcdir="testsrc" />
+	</target>
+</project>
